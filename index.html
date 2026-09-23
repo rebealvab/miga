@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="description" content="Miga — freshly baked cookies. Elige tus sabores, arma tu pedido y recíbelo con 48 h de anticipación.">
+	<title>Miga Cookies</title>
+
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+	<header class="site-header">
+		<nav class="navbar container">
+			<a href="#inicio" class="logo" aria-label="Miga inicio">miga.</a>
+
+			<div class="nav-links">
+				<a href="#sabores">sabores</a>
+				<a href="#about">nosotros</a>
+				<a href="#pedidos">pedidos</a>
+			</div>
+
+			<button class="cart-button" id="openCartBtn" type="button" aria-label="Abrir carrito">
+				bag <span id="cartCount">0</span>
+			</button>
+		</nav>
+	</header>
+
+	<main>
+		<section class="hero container" id="inicio">
+			<div class="hero-copy">
+				<p class="eyebrow">freshly baked cookies</p>
+
+				<h1>
+					hechas para el antojo.<br>
+					difíciles de compartir.
+				</h1>
+
+				<p class="hero-description">
+					Galletas grandes, suaves por dentro y hechas para esos momentos
+					en los que una sola nunca parece suficiente.
+				</p>
+
+				<div class="hero-actions">
+					<a href="#sabores" class="button">ver sabores</a>
+					<a href="#pedidos" class="text-link">cómo pedir →</a>
+				</div>
+			</div>
+
+			<div class="hero-visual">
+				<img src="images/honey-walnut.webp" alt="Galleta Honey Walnut de Miga">
+				<span class="hero-sticker">sharing is optional</span>
+			</div>
+		</section>
+
+		<section class="phrase-bar" aria-label="Frases de Miga">
+			<p>eat miga • freshly baked • sharing is optional • eat miga • freshly baked • sharing is optional •</p>
+		</section>
+
+		<section class="pricing-strip">
+			<div class="container pricing-grid">
+				<div>
+					<strong>1–3 migas</strong>
+					<span>$35 c/u</span>
+				</div>
+				<div>
+					<strong>4+ migas</strong>
+					<span>$30 c/u</span>
+				</div>
+		</section>
+
+		<section class="menu-section container" id="sabores">
+			<div class="section-heading">
+				<div>
+					<p class="eyebrow">the good stuff</p>
+					<h2>conoce los sabores.</h2>
+				</div>
+
+				<p class="section-note">
+					El precio por pieza se ajusta automáticamente según el total de migas en tu carrito.
+				</p>
+			</div>
+
+			<div id="regularProducts" class="product-grid"></div>
+
+			<div class="seasonal-heading">
+				<div>
+					<p class="eyebrow">limited time</p>
+					<h2>seasonal drop.</h2>
+				</div>
+				<span class="season-pill">por temporada</span>
+			</div>
+
+			<div id="seasonalProducts" class="product-grid product-grid-seasonal"></div>
+		</section>
+
+		<section class="brand-message">
+			<div class="container">
+				<p>
+					cookies para días buenos,<br>
+					días malos y antojos sin explicación.
+				</p>
+			</div>
+		</section>
+
+		<section class="about" id="about">
+			<div class="container about-inner">
+				<p class="eyebrow">about miga</p>
+
+				<h2>un poquito de nosotros<br>en cada pieza.</h2>
+
+				<p>
+					Miga empezó con la idea de hacer unas galletas súper ricas e intentar
+					superarnos con cada nuevo sabor. Cada receta comparte un poquito de
+					nuestros gustos, nuestros antojos y el amor que ponemos en cada pieza.
+				</p>
+
+				<div class="about-signoff">
+					freshly baked. made to share.<br>
+					<em>sharing is optional.</em>
+				</div>
+			</div>
+		</section>
+
+		<section class="orders-info container" id="pedidos">
+			<div class="section-heading">
+				<div>
+					<p class="eyebrow">how it works</p>
+					<h2>pide tus miga.</h2>
+				</div>
+			</div>
+
+			<div class="steps-grid">
+				<article>
+					<span>01</span>
+					<h3>arma tu bag</h3>
+					<p>Elige tus sabores y cantidades. El precio por pieza cambia automáticamente según tu total.</p>
+				</article>
+
+				<article>
+					<span>02</span>
+					<h3>elige tu entrega</h3>
+					<p>Trabajamos con 48 h de anticipación. Miércoles, sábado y domingo tienen entrega Miga sin costo.</p>
+				</article>
+
+				<article>
+					<span>03</span>
+					<h3>confirma tu pedido</h3>
+					<p>Elige efectivo o transferencia. Los datos bancarios se comparten únicamente cuando confirmemos contigo.</p>
+				</article>
+			</div>
+
+			<div class="delivery-note">
+				<strong>¿Necesitas otro día?</strong>
+				<p>
+					Podemos revisar disponibilidad y enviarlo por Uber. El costo del viaje
+					se confirma antes de mandar tu pedido.
+				</p>
+			</div>
+		</section>
+
+		<section class="checkout-section" id="checkout">
+			<div class="container checkout-layout">
+				<div class="checkout-copy">
+					<p class="eyebrow">checkout</p>
+					<h2>casi son tuyas.</h2>
+					<p>
+						Completa tus datos. Al enviar, registraremos tu orden para confirmarla contigo.
+					</p>
+
+					<div class="checkout-summary" id="checkoutSummary">
+						<p>Tu carrito está vacío.</p>
+					</div>
+				</div>
+
+				<form class="checkout-form" id="checkoutForm">
+					<div class="field-grid">
+						<label>
+							Nombre *
+							<input type="text" id="customerName" required autocomplete="name">
+						</label>
+
+						<label>
+							WhatsApp *
+							<input type="tel" id="customerPhone" required autocomplete="tel" placeholder="10 dígitos">
+						</label>
+					</div>
+
+					<label>
+						Instagram
+						<input type="text" id="customerInstagram" placeholder="@usuario (opcional)">
+					</label>
+
+					<div class="field-grid">
+						<label>
+							Fecha deseada *
+							<input type="date" id="deliveryDate" required>
+						</label>
+
+						<label>
+							Método de pago *
+							<select id="paymentMethod" required>
+								<option value="">Selecciona</option>
+								<option value="Transferencia">Transferencia</option>
+								<option value="Efectivo">Efectivo</option>
+							</select>
+						</label>
+					</div>
+
+					<fieldset>
+						<legend>Entrega *</legend>
+
+						<label class="radio-card">
+							<input type="radio" name="deliveryMethod" value="Entrega Miga" id="migaDelivery" required>
+							<span>
+								<strong>Entrega Miga — sin costo</strong>
+								<small>Miércoles, sábado o domingo, siempre con mínimo 48 h de anticipación.</small>
+							</span>
+						</label>
+
+						<label class="radio-card">
+							<input type="radio" name="deliveryMethod" value="Uber" id="uberDelivery">
+							<span>
+								<strong>Uber — costo por confirmar</strong>
+								<small>Para otra fecha disponible. Te confirmamos el costo antes de enviarlo.</small>
+							</span>
+						</label>
+					</fieldset>
+
+					<div id="deliveryMessage" class="form-message" hidden></div>
+
+					<label>
+						Notas
+						<textarea id="orderNotes" rows="4" placeholder="Ej. prefiero entrega por la tarde, referencia de la zona, etc."></textarea>
+					</label>
+
+					<label class="consent-row">
+						<input type="checkbox" id="confirmationCheck" required>
+						<span>Entiendo que mi pedido queda sujeto a confirmación de Miga.</span>
+					</label>
+
+					<button class="button submit-button" type="submit" id="submitOrderBtn">
+						enviar pedido
+					</button>
+
+					<p class="privacy-copy">
+						Tus datos se usan únicamente para procesar y confirmar tu pedido.
+					</p>
+				</form>
+			</div>
+		</section>
+
+		<section class="contact-section">
+			<div class="container contact-inner">
+				<p class="eyebrow">still craving?</p>
+				<h2>habla con miga.</h2>
+
+				<div class="contact-actions">
+					<a class="button light-button" href="https://www.instagram.com/eatmiga_?stkn=MWZ0bTRjdzI2N3cxbA%3D%3D&utm_source=qr" target="_blank" rel="noreferrer">
+						Instagram
+					</a>
+
+					<button class="button light-button" type="button" id="generalWhatsAppBtn">
+						WhatsApp
+					</button>
+				</div>
+			</div>
+		</section>
+	</main>
+
+	<footer>
+		<div class="container footer-inner">
+			<a href="#inicio" class="logo footer-logo">miga.</a>
+			<a href="https://www.instagram.com/eatmiga_?stkn=MWZ0bTRjdzI2N3cxbA%3D%3D&utm_source=qr" target="_blank" rel="noreferrer">@eatmiga_</a>
+			<p>made with love & muchas migas.</p>
+		</div>
+	</footer>
+
+	<aside class="cart-drawer" id="cartDrawer" aria-hidden="true">
+		<div class="cart-header">
+			<div>
+				<p class="eyebrow">your bag</p>
+				<h2>tus migas.</h2>
+			</div>
+
+			<button type="button" class="close-button" id="closeCartBtn" aria-label="Cerrar carrito">×</button>
+		</div>
+
+		<div id="cartItems" class="cart-items"></div>
+
+		<div class="cart-footer">
+			<div class="cart-price-note" id="cartPriceNote"></div>
+
+			<div class="cart-total-row">
+				<span>Total</span>
+				<strong id="cartTotal">$0</strong>
+			</div>
+
+			<button class="button full-button" type="button" id="goCheckoutBtn">
+				continuar pedido
+			</button>
+		</div>
+	</aside>
+
+	<div class="drawer-overlay" id="drawerOverlay" hidden></div>
+
+	<div class="success-modal" id="successModal" hidden>
+		<div class="success-card">
+			<button class="close-button modal-close" id="closeSuccessBtn" type="button">×</button>
+			<p class="eyebrow">pedido recibido</p>
+			<h2>thank you, cookie lover.</h2>
+			<p id="successText"></p>
+			<button class="button" id="confirmWhatsAppBtn" type="button">confirmar por WhatsApp</button>
+			<p class="success-small">También registramos tu pedido para seguimiento interno.</p>
+		</div>
+	</div>
+
+	<script src="script.js"></script>
+</body>
+
+</html>

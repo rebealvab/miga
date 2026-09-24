@@ -451,6 +451,509 @@ function whatsappOrderMessage(order) {
     .join("\n");
 }
 
+function downloadReceipt(order) {
+  const receiptWindow = window.open("", "_blank");
+
+  if (!receiptWindow) {
+    alert("Permite las ventanas emergentes para generar tu recibo.");
+    return;
+  }
+
+  const [year, month, day] = order.deliveryDate.split("-");
+  const deliveryDate = `${day}/${month}/${year}`;
+
+  const orderDate = new Date().toLocaleDateString("es-MX", {
+    day: "numeric",
+    month: "long",
+    year: "numeric"
+  });
+
+  const itemsHtml = order.items
+    .map(
+      item => `
+        <div class="item">
+          <span>${item.qty} × ${item.name}</span>
+          <span>${money(item.qty * order.unitPrice)}</span>
+        </div>
+      `
+    )
+    .join("");
+
+  receiptWindow.document.write(`
+    <!DOCTYPE html>
+    <html lang="es">
+    <head>
+      <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      <title>Recibo ${order.orderId}</title>
+
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"><\/script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"><\/script>
+
+      <style>
+        * {
+          box-sizing: border-box;
+        }
+
+        body {
+          margin: 0;
+          padding: 40px 20px;
+          background-color: #f7e8bd;
+background-image:
+  linear-gradient(45deg, #f4c84f 25%, transparent 25%),
+  linear-gradient(-45deg, #f4c84f 25%, transparent 25%),
+  linear-gradient(45deg, transparent 75%, #f4c84f 75%),
+  linear-gradient(-45deg, transparent 75%, #f4c84f 75%);
+background-size: 120px 120px;
+background-position:
+  0 0,
+  0 60px,
+  60px -60px,
+  -60px 0;
+          color: #4a2d13;
+          font-family: Arial, sans-serif;
+        }
+
+        .receipt {
+          width: 100%;
+          max-width: 680px;
+          margin: 0 auto;
+          background: #fffaf3;
+          padding: 54px;
+          border-radius: 0;
+
+--ticket-cut: 18px;
+--ticket-cut-top: 24px;
+
+-webkit-mask:
+  radial-gradient(circle at 0 50%, transparent var(--ticket-cut), #000 calc(var(--ticket-cut) + 1px))
+    left / 100% 56px repeat-y,
+  radial-gradient(circle at 100% 50%, transparent var(--ticket-cut), #000 calc(var(--ticket-cut) + 1px))
+    right / 100% 56px repeat-y,
+  radial-gradient(circle at 50% 0, transparent var(--ticket-cut-top), #000 calc(var(--ticket-cut-top) + 1px))
+    top / 90px 100% repeat-x,
+  radial-gradient(circle at 50% 100%, transparent var(--ticket-cut-top), #000 calc(var(--ticket-cut-top) + 1px))
+    bottom / 90px 100% repeat-x;
+
+-webkit-mask-composite: source-in;
+
+mask:
+  radial-gradient(circle at 0 50%, transparent var(--ticket-cut), #000 calc(var(--ticket-cut) + 1px))
+    left / 100% 56px repeat-y,
+  radial-gradient(circle at 100% 50%, transparent var(--ticket-cut), #000 calc(var(--ticket-cut) + 1px))
+    right / 100% 56px repeat-y,
+  radial-gradient(circle at 50% 0, transparent var(--ticket-cut-top), #000 calc(var(--ticket-cut-top) + 1px))
+    top / 90px 100% repeat-x,
+  radial-gradient(circle at 50% 100%, transparent var(--ticket-cut-top), #000 calc(var(--ticket-cut-top) + 1px))
+    bottom / 90px 100% repeat-x;
+
+mask-composite: intersect;
+
+box-shadow: 0 16px 50px rgba(74, 45, 19, 0.12);
+}
+
+        .brand-logo {
+  display: block;
+  width: 300px;
+  height: auto;
+  margin: 0 auto;
+  object-fit: contain;
+}
+  .mascot-wrap {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 28px 0 32px;
+}
+
+.mascot {
+  display: block;
+  width: 300px;
+  max-width: 70%;
+  height: auto;
+  object-fit: contain;
+}
+
+        .tagline {
+          text-align: center;
+          letter-spacing: 4px;
+          font-size: 11px;
+          margin: 12px 0 34px;
+        }
+
+        .line {
+          border: 0;
+          border-top: 1px solid #d8cabc;
+          margin: 28px 0;
+        }
+
+        .top {
+          display: flex;
+          justify-content: space-between;
+          gap: 30px;
+        }
+
+        .label {
+          font-size: 10px;
+          letter-spacing: 2px;
+          font-weight: bold;
+          text-transform: uppercase;
+          margin-bottom: 6px;
+        }
+
+        .order-id {
+          font-size: 25px;
+          font-weight: bold;
+          margin: 0 0 5px;
+        }
+
+        .muted {
+          color: #7a6859;
+          font-size: 13px;
+        }
+
+        .status {
+          display: inline-block;
+          background: #ead8c2;
+          padding: 9px 15px;
+          border-radius: 30px;
+          font-size: 12px;
+        }
+
+        .customer {
+          background: #f5eadf;
+          border-radius: 14px;
+          padding: 18px;
+          margin: 28px 0;
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 20px;
+        }
+
+        h2 {
+          font-size: 14px;
+          letter-spacing: 1px;
+          margin: 0 0 18px;
+        }
+
+        .item {
+          display: flex;
+          justify-content: space-between;
+          gap: 20px;
+          padding: 7px 0;
+          font-size: 14px;
+        }
+
+        .summary {
+          display: flex;
+          justify-content: space-between;
+          align-items: flex-end;
+          margin-top: 20px;
+        }
+
+        .total-label {
+          font-size: 20px;
+          font-weight: bold;
+        }
+
+        .total {
+          font-size: 28px;
+          font-weight: bold;
+        }
+
+        .details {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: 22px;
+          font-size: 13px;
+        }
+
+        .closing {
+          text-align: center;
+          margin-top: 40px;
+        }
+
+        .closing-title {
+          font-family: Georgia, serif;
+          font-style: italic;
+          font-size: 24px;
+          margin-bottom: 8px;
+        }
+
+        .footer {
+          text-align: center;
+          font-size: 11px;
+          margin-top: 30px;
+          color: #7a6859;
+        }
+
+        .print-button {
+          display: block;
+          width: 100%;
+          max-width: 680px;
+          margin: 20px auto 0;
+          border: 0;
+          border-radius: 30px;
+          padding: 15px;
+          background: #4a2d13;
+          color: white;
+          font-weight: bold;
+          cursor: pointer;
+        }
+
+        @media print {
+  @page {
+    size: A4 portrait;
+    margin: 0;
+  }
+
+  html,
+  body {
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+
+  .print-button {
+    display: none !important;
+  }
+}
+
+        @media (max-width: 600px) {
+          body {
+            padding: 0;
+          }
+
+          .receipt {
+            padding: 36px 24px;
+            min-height: 100vh;
+          }
+
+          .customer,
+          .details {
+            grid-template-columns: 1fr;
+          }
+
+
+          .print-button {
+            width: calc(100% - 40px);
+            margin-bottom: 20px;
+          }
+        }
+      </style>
+    </head>
+
+    <body>
+
+      <main class="receipt">
+
+        <img class="brand-logo" src="images/miga-logo.png" alt="Miga">
+        <p class="tagline">THANKS FOR YOUR ORDER.</p>
+
+        <hr class="line">
+
+        <div class="top">
+          <div>
+            <div class="label">Pedido</div>
+            <p class="order-id">${order.orderId}</p>
+            <span class="muted">${orderDate}</span>
+          </div>
+
+          <div>
+            <div class="label">Estatus</div>
+            <span class="status">Pedido recibido</span>
+          </div>
+        </div>
+
+        <div class="customer">
+          <div>
+            <div class="label">Nombre</div>
+            ${order.customerName}
+          </div>
+
+          <div>
+            <div class="label">WhatsApp</div>
+            ${order.customerPhone}
+          </div>
+        </div>
+
+<div class="mascot-wrap">
+  <img class="mascot" src="images/miga-mascota.png" alt="Mascota Miga">
+</div>
+
+        <h2>TU PEDIDO</h2>
+
+        ${itemsHtml}
+
+        <hr class="line">
+
+        <div class="muted">
+          ${order.pieces} ${order.pieces === 1 ? "miga" : "migas"}
+          · ${money(order.unitPrice)} c/u
+        </div>
+
+        <div class="summary">
+          <span class="total-label">TOTAL</span>
+          <span class="total">${money(order.total)}</span>
+        </div>
+
+        <hr class="line">
+
+        <div class="details">
+          <div>
+            <div class="label">Fecha de entrega</div>
+            ${deliveryDate}
+          </div>
+
+          <div>
+            <div class="label">Entrega</div>
+            ${order.deliveryMethod}
+          </div>
+
+          <div>
+            <div class="label">Método de pago</div>
+            ${order.paymentMethod}
+          </div>
+        </div>
+
+        <div class="closing">
+          <div class="closing-title">pedido recibido ♥</div>
+          <div class="muted">
+            te contactaremos para confirmar entrega y pago.
+          </div>
+        </div>
+
+        <div class="footer">
+          @eatmiga_ · eatmiga.netlify.app
+        </div>
+
+      </main>
+
+      <button class="print-button" id="savePdfBtn">
+  guardar recibo como PDF ↓
+</button>
+
+    </body>
+    </html>
+  `);
+
+  receiptWindow.document.close();
+  
+  receiptWindow.onload = () => {
+    const savePdfBtn = receiptWindow.document.getElementById("savePdfBtn");
+    const receipt = receiptWindow.document.querySelector(".receipt");
+
+    savePdfBtn.addEventListener("click", async () => {
+      savePdfBtn.textContent = "generando PDF...";
+
+      try {
+        // Espera a que logo y mascota estén completamente cargados
+        const images = Array.from(receipt.querySelectorAll("img"));
+        await Promise.all(
+          images.map(img => {
+            if (img.complete) return Promise.resolve();
+
+            return new Promise(resolve => {
+              img.onload = resolve;
+              img.onerror = resolve;
+            });
+          })
+        );
+
+        // 1) Captura el recibo (html2canvas no entiende "mask", sale rectangular)
+        const S = 3; // resolución
+        const canvas = await receiptWindow.html2canvas(receipt, {
+          scale: S,
+          useCORS: true,
+          allowTaint: true,
+          backgroundColor: null,
+          logging: false
+        });
+
+        // Copia a un lienzo limpio (sin la escala interna de html2canvas)
+        const ticket = receiptWindow.document.createElement("canvas");
+        ticket.width = canvas.width;
+        ticket.height = canvas.height;
+        const ctx = ticket.getContext("2d");
+        ctx.drawImage(canvas, 0, 0);
+
+        const w = ticket.width;
+        const h = ticket.height;
+
+        // 2) Recorta las medias lunas en los 4 bordes
+        ctx.globalCompositeOperation = "destination-out";
+
+        const hole = (x, y, r) => {
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        };
+
+        const sideR = 18 * S, sideStep = 56 * S;   // lados (igual que la web)
+        const topR  = 24 * S, topStep  = 90 * S;   // arriba/abajo (igual que la web)
+
+        for (let y = (h / 2) % sideStep; y < h; y += sideStep) {
+          hole(0, y, sideR);
+          hole(w, y, sideR);
+        }
+
+        for (let x = (w / 2) % topStep; x < w; x += topStep) {
+          hole(x, 0, topR);
+          hole(x, h, topR);
+        }
+
+        ctx.globalCompositeOperation = "source-over";
+
+        // 3) Lienzo final con el fondo de cuadros
+        const pad = 50 * S;
+        const out = receiptWindow.document.createElement("canvas");
+        out.width = w + pad * 2;
+        out.height = h + pad * 2;
+        const o = out.getContext("2d");
+
+        o.fillStyle = "#f7e8bd";
+        o.fillRect(0, 0, out.width, out.height);
+
+        o.fillStyle = "#f4c84f";
+        const sq = 60 * S;
+        for (let row = 0; row * sq < out.height; row++) {
+          for (let col = 0; col * sq < out.width; col++) {
+            if ((row + col) % 2) o.fillRect(col * sq, row * sq, sq, sq);
+          }
+        }
+
+        // sombrita suave como en la web
+        o.shadowColor = "rgba(74, 45, 19, 0.15)";
+        o.shadowBlur = 50 * S;
+        o.shadowOffsetY = 16 * S;
+        o.drawImage(ticket, pad, pad);
+
+        // 4) PDF del tamaño exacto de la imagen
+        const imgData = out.toDataURL("image/png", 1.0);
+        const { jsPDF } = receiptWindow.jspdf;
+
+        const pdfWidth = 180;
+        const pdfHeight = (out.height * pdfWidth) / out.width;
+
+        const pdf = new jsPDF({
+          orientation: "portrait",
+          unit: "mm",
+          format: [pdfWidth, pdfHeight]
+        });
+
+        pdf.addImage(imgData, "PNG", 0, 0, pdfWidth, pdfHeight, undefined, "FAST");
+        pdf.save(`${order.orderId}.pdf`);
+
+      } catch (error) {
+        console.error("Error generando PDF:", error);
+        alert("No pudimos generar el PDF. Intenta de nuevo.");
+      } finally {
+        savePdfBtn.textContent = "guardar recibo como PDF ↓";
+      }
+    });
+  };
+
+}
+
 function openWhatsApp(message) {
   const url = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
     message
@@ -567,6 +1070,13 @@ document
   .addEventListener("click", () => {
     if (!lastOrder) return;
     openWhatsApp(whatsappOrderMessage(lastOrder));
+  });
+
+  document
+  .getElementById("downloadReceiptBtn")
+  .addEventListener("click", () => {
+    if (!lastOrder) return;
+    downloadReceipt(lastOrder);
   });
 
 document.getElementById("closeSuccessBtn").addEventListener("click", () => {

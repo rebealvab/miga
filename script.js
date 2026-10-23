@@ -52,24 +52,15 @@ const products = [
       "Galleta de chocolate con chispas de chocolate blanco y semiamargo, rellena de peanut butter.",
     image: "images/chocolate-pb.webp",
     seasonal: false
-  },
-  {
-    id: "pistachio-blanco",
-    name: "Pistachio Blanco",
-    description: "Pistache con chocolate blanco.",
-    image: "images/pistachio-blanco.webp",
-    seasonal: true
-  },
-  {
-    id: "arroz-con-leche",
-    name: "Arroz con Leche",
-    description: "Arroz, leche y canela.",
-    image: "images/arroz-con-leche.webp",
-    seasonal: true
   }
 ];
 
 let cart = JSON.parse(localStorage.getItem("migaCart") || "{}");
+
+// Quita del carrito guardado los sabores que ya no están en el menú
+Object.keys(cart).forEach(id => {
+  if (!products.some(product => product.id === id)) delete cart[id];
+});
 let lastOrder = null;
 
 // ==============================
@@ -131,6 +122,11 @@ function renderProducts() {
 
   document.getElementById("seasonalProducts").innerHTML =
     seasonal.map(productCard).join("");
+
+  // Si no hay sabores de temporada, se oculta la sección completa
+  const hasSeasonal = seasonal.length > 0;
+  document.querySelector(".seasonal-heading").hidden = !hasSeasonal;
+  document.getElementById("seasonalProducts").hidden = !hasSeasonal;
 }
 
 // ==============================

@@ -52,6 +52,14 @@ const products = [
       "Galleta de chocolate con chispas de chocolate blanco y semiamargo, rellena de peanut butter.",
     image: "images/chocolate-pb.webp",
     seasonal: false
+  },
+  {
+    id: "guava-cheese",
+    name: "Guava n' Cheese",
+    description:
+      "Galleta con trozos de ate de guayaba y queso. Dulce, cremosa y con su toque saladito.",
+    image: "images/guava-cheese.webp",
+    seasonal: true
   }
 ];
 
@@ -68,9 +76,9 @@ let lastOrder = null;
 // ==============================
 function unitPriceFor(quantity) {
 	//Nuevos precios Miga
-  if (quantity >= 4) return 30; //A partir de 4 galletas
+  if (quantity >= 4) return 25; //A partir de 4 galletas
 
-  return 35; //1 a 3 galletas
+  return 28; //1 a 3 galletas
 }
 
 function totalPieces() {
@@ -104,7 +112,7 @@ function productCard(product) {
       <p class="product-description">${product.description}</p>
 
       <div class="product-actions">
-        <span class="product-price">desde $30 c/u</span>
+        <span class="product-price">desde $25 c/u</span>
         <button class="add-button" type="button" data-add="${product.id}">
           + agregar
         </button>
@@ -211,7 +219,7 @@ function renderCart() {
     )} c/u`;
 	
 	if (pieces < 4) {
-  tierText += ` · agrega ${4 - pieces} para bajar a $30 c/u`;
+  tierText += ` · agrega ${4 - pieces} para bajar a $25 c/u`;
 } else {
   tierText += " · mejor precio aplicado";
 }

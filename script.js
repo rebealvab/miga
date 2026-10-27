@@ -348,46 +348,32 @@ function parseLocalDate(dateString) {
   return new Date(year, month - 1, day, 12, 0, 0);
 }
 
-function isMigaDeliveryDay(dateString) {
-  if (!dateString) return false;
-
-  const date = parseLocalDate(dateString);
-  const day = date.getDay();
-
-  // 0 = domingo, 3 = miércoles, 6 = sábado
-  return day === 0 || day === 3 || day === 6;
-}
-
+// Se entrega cualquier día, siempre con 48 h de anticipación.
+// Entrega Miga si el cliente está cerca (se coordina por WhatsApp); si no, Uber.
 function updateDeliveryOptions() {
-  const dateInput = document.getElementById("deliveryDate");
-  const date = dateInput.value;
-  const migaRadio = document.getElementById("migaDelivery");
-  const uberRadio = document.getElementById("uberDelivery");
+  const date = document.getElementById("deliveryDate").value;
   const message = document.getElementById("deliveryMessage");
 
   if (!date) {
-    migaRadio.disabled = false;
     message.hidden = true;
     return;
   }
 
-  if (isMigaDeliveryDay(date)) {
-    migaRadio.disabled = false;
-    message.hidden = false;
+  message.hidden = false;
+
+  if (date < minimumDeliveryDate()) {
     message.textContent =
-      "Esta fecha puede aplicar para entrega Miga sin costo, sujeto a confirmación.";
+      "Necesitamos mínimo 48 h de anticipación. Elige una fecha a partir del " +
+      shortDate(minimumDeliveryDate()) + ".";
   } else {
-    migaRadio.disabled = true;
-
-    if (migaRadio.checked) {
-      migaRadio.checked = false;
-      uberRadio.checked = true;
-    }
-
-    message.hidden = false;
     message.textContent =
-      "Para esta fecha, la opción disponible es Uber con costo por confirmar.";
+      "¡Fecha disponible! Si estás cerca, la entrega Miga es sin costo; si no, va por Uber. Te escribimos por WhatsApp para coordinar.";
   }
+}
+
+function shortDate(dateString) {
+  const [year, month, day] = dateString.split("-");
+  return `${day}/${month}/${year}`;
 }
 
 // ==============================
@@ -466,14 +452,6 @@ function validateOrder(order) {
 
   if (order.deliveryDate < minDate) {
     alert("Los pedidos requieren mínimo 48 h de anticipación.");
-    return false;
-  }
-
-  if (
-    order.deliveryMethod === "Entrega Miga" &&
-    !isMigaDeliveryDay(order.deliveryDate)
-  ) {
-    alert("La entrega Miga sin costo solo está disponible miércoles, sábado y domingo.");
     return false;
   }
 

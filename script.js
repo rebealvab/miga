@@ -54,6 +54,14 @@ const products = [
     seasonal: false
   },
   {
+    id: "chocolate-chunks",
+    name: "Chocolate Chunks",
+    description:
+      "Nuestra clásica masa de vainilla, cargada de trozos de chocolate con leche y oscuro, con pedacitos de nuez que hacen cada mordida todavía mejor.",
+    image: "images/chocolate-chunks.webp",
+    seasonal: false
+  },
+  {
     id: "guava-cheese",
     name: "Guava n' Cheese",
     description:

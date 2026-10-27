@@ -89,6 +89,38 @@ function unitPriceFor(quantity) {
   return 28; //1 a 3 galletas
 }
 
+// ==============================
+// CÓDIGOS DE DESCUENTO
+// ==============================
+const DISCOUNT_CODES = {
+  HOLAMIGA: { amount: 25, minPieces: 6, until: "2026-11-30" }
+};
+
+function todayISO() {
+  const now = new Date();
+  const pad = n => String(n).padStart(2, "0");
+  return `${now.getFullYear()}-${pad(now.getMonth() + 1)}-${pad(now.getDate())}`;
+}
+
+function evaluateDiscount(pieces) {
+  const input = document.getElementById("discountCode");
+  const code = input ? input.value.trim().toUpperCase() : "";
+  if (!code) return { code: "", amount: 0, message: "" };
+
+  const rule = DISCOUNT_CODES[code];
+  if (!rule) return { code: "", amount: 0, message: "Ese código no existe." };
+  if (todayISO() > rule.until) return { code: "", amount: 0, message: "Este código ya venció." };
+  if (pieces < rule.minPieces) {
+    const missing = rule.minPieces - pieces;
+    return {
+      code: "",
+      amount: 0,
+      message: `${code} aplica desde ${rule.minPieces} migas. Agrega ${missing} más.`
+    };
+  }
+  return { code, amount: rule.amount, message: `¡Listo! ${money(rule.amount)} de descuento aplicado.` };
+}
+
 function totalPieces() {
   return Object.values(cart).reduce((sum, qty) => sum + qty, 0);
 }
@@ -242,8 +274,11 @@ function renderCheckoutSummary() {
   const items = cartItemsArray();
   const pieces = totalPieces();
   const priceEach = pieces ? unitPriceFor(pieces) : 0;
-  const total = pieces * priceEach;
+  const discount = evaluateDiscount(pieces);
+  const total = pieces * priceEach - discount.amount;
   const summary = document.getElementById("checkoutSummary");
+  const discountMessage = document.getElementById("discountMessage");
+  if (discountMessage) discountMessage.textContent = discount.message;
 
   if (!items.length) {
     summary.innerHTML = "<p>Tu carrito está vacío.</p>";
@@ -266,6 +301,12 @@ function renderCheckoutSummary() {
       <span>Precio aplicado</span>
       <strong>${money(priceEach)} c/u</strong>
     </div>
+
+    ${discount.amount ? `
+    <div class="summary-line">
+      <span>Código ${discount.code}</span>
+      <strong>−${money(discount.amount)}</strong>
+    </div>` : ""}
 
     <div class="summary-line summary-total">
       <span>Total</span>
@@ -370,7 +411,8 @@ function buildOrderData() {
   const items = cartItemsArray();
   const pieces = totalPieces();
   const priceEach = unitPriceFor(pieces);
-  const total = pieces * priceEach;
+  const discount = evaluateDiscount(pieces);
+  const total = pieces * priceEach - discount.amount;
 
   return {
     orderId: "",
@@ -386,6 +428,8 @@ function buildOrderData() {
     notes: document.getElementById("orderNotes").value.trim(),
     pieces,
     unitPrice: priceEach,
+    discountCode: discount.code,
+    discount: discount.amount,
     total,
     items: items.map(item => ({
       id: item.id,
@@ -451,6 +495,7 @@ function whatsappOrderMessage(order) {
     items,
     ``,
     `*${order.pieces} ${order.pieces === 1 ? "miga" : "migas"} · ${money(order.unitPrice)} c/u*`,
+    order.discount ? `*Código ${order.discountCode}: −${money(order.discount)}*` : "",
     `*Total: ${money(order.total)}*`,
     ``,
     `*Fecha:* ${prettyDate}`,
@@ -801,6 +846,7 @@ box-shadow: 0 16px 50px rgba(74, 45, 19, 0.12);
         <div class="muted">
           ${order.pieces} ${order.pieces === 1 ? "miga" : "migas"}
           · ${money(order.unitPrice)} c/u
+          ${order.discount ? `<br>Código ${order.discountCode}: −${money(order.discount)}` : ""}
         </div>
 
         <div class="summary">
@@ -1072,6 +1118,10 @@ document
 document
   .getElementById("checkoutForm")
   .addEventListener("submit", submitOrder);
+
+// Código de descuento: recalcula el resumen al escribir
+const discountInput = document.getElementById("discountCode");
+if (discountInput) discountInput.addEventListener("input", renderCheckoutSummary);
 
 // Pedidos para el día siguiente: se consultan por WhatsApp
 document.querySelectorAll("[data-rush]").forEach(link => {

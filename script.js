@@ -1065,6 +1065,14 @@ document
   .getElementById("checkoutForm")
   .addEventListener("submit", submitOrder);
 
+// Pedidos para el día siguiente: se consultan por WhatsApp
+document.querySelectorAll("[data-rush]").forEach(link => {
+  link.addEventListener("click", event => {
+    event.preventDefault();
+    openWhatsApp("Hola Miga 🍪 ¿Tienen galletas listas para mañana? Me interesa: ");
+  });
+});
+
 document.getElementById("generalWhatsAppBtn").addEventListener("click", () => {
   openWhatsApp("Hola Miga 🍪 Tengo una pregunta sobre sus cookies.");
 });
